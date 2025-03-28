@@ -13,9 +13,12 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 import { StyleSheet, Text, View } from "react-native";
+import Animated from "react-native-reanimated";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+const SIZE = 100;
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -36,7 +39,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <View style={styles.container}>
-        <Text>Open up _layout.tsx to start working on your app!</Text>
+        <Animated.View style={styles.square} />
       </View>
       <StatusBar style="auto" />
     </ThemeProvider>
@@ -49,5 +52,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  square: {
+    width: SIZE,
+    height: SIZE,
+    backgroundColor: "blue",
   },
 });
