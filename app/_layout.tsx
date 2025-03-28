@@ -17,6 +17,7 @@ import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 import {
   GestureHandlerRootView,
@@ -28,6 +29,7 @@ import {
 SplashScreen.preventAutoHideAsync();
 
 const SIZE = 100;
+const CIRCLE_RADIUS = SIZE * 2;
 
 type ContextType = {
   translateX: number;
@@ -61,7 +63,13 @@ export default function RootLayout() {
       translateX.value = event.translationX + context.translateX;
       translateY.value = event.translationY + context.translateY;
     },
-    onEnd: (event) => {},
+    onEnd: () => {
+      const distance = Math.sqrt(translateX.value ** 2 + translateY.value ** 2);
+      if (distance < CIRCLE_RADIUS + SIZE / 2) {
+        translateX.value = withSpring(0);
+        translateY.value = withSpring(0);
+      }
+    },
   });
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -80,9 +88,11 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <GestureHandlerRootView>
         <View style={styles.container}>
-          <PanGestureHandler onGestureEvent={panGestrureEvent}>
-            <Animated.View style={[styles.square, animatedStyle]} />
-          </PanGestureHandler>
+          <View style={styles.circle}>
+            <PanGestureHandler onGestureEvent={panGestrureEvent}>
+              <Animated.View style={[styles.square, animatedStyle]} />
+            </PanGestureHandler>
+          </View>
         </View>
         <StatusBar style="auto" />
       </GestureHandlerRootView>
@@ -102,5 +112,14 @@ const styles = StyleSheet.create({
     height: SIZE,
     backgroundColor: "rgba(0, 0, 256, 0.5)",
     borderRadius: 20,
+  },
+  circle: {
+    width: CIRCLE_RADIUS * 2,
+    height: CIRCLE_RADIUS * 2,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: CIRCLE_RADIUS,
+    borderWidth: 5,
+    borderColor: "rgba(0, 0, 256, 0.5)",
   },
 });
